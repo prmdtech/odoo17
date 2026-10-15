@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_profit_loss_line_tree" model="ir.ui.view">
+        <field name="name">mmp.project.profit.loss.line.tree</field>
+        <field name="model">mmp.project.profit.loss.line</field>
+        <field name="arch" type="xml">
+            <tree string="Project P&amp;L by COA" create="0" edit="0" delete="0" default_order="date desc">
+                <field name="date" optional="show"/>
+                <field name="project_id" optional="show"/>
+                <field name="company_id" optional="hide" groups="base.group_multi_company"/>
+                <field name="section" optional="show"/>
+                <field name="account_code" optional="show"/>
+                <field name="account_name" optional="show"/>
+                <field name="account_type" optional="show"/>
+                <field name="allocated_debit" sum="Total Debit Allocation" optional="show"/>
+                <field name="allocated_credit" sum="Total Credit Allocation" optional="show"/>
+                <field name="net_financial_amount" sum="Net Profit / Loss" optional="show"
+                       decoration-success="net_financial_amount &gt; 0" decoration-danger="net_financial_amount &lt; 0"/>
+                <field name="currency_id" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_project_journal_history_tree" model="ir.ui.view">
+        <field name="name">mmp.project.profit.loss.line.history.tree</field>
+        <field name="model">mmp.project.profit.loss.line</field>
+        <field name="arch" type="xml">
+            <tree string="Project Journal History" create="0" edit="0" delete="0">
+                <field name="date"/>
+                <field name="project_id" optional="show"/>
+                <field name="move_name"/>
+                <field name="journal_id"/>
+                <field name="partner_id" optional="show"/>
+                <field name="account_code"/>
+                <field name="account_name"/>
+                <field name="debit" sum="Debit" optional="hide"/>
+                <field name="credit" sum="Credit" optional="hide"/>
+                <field name="analytic_percentage"/>
+                <field name="allocated_balance" sum="Allocated Amount"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="currency_id" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_project_profit_loss_line_search" model="ir.ui.view">
+        <field name="name">mmp.project.profit.loss.line.search</field>
+        <field name="model">mmp.project.profit.loss.line</field>
+        <field name="arch" type="xml">
+            <search string="Project Financial Entries">
+                <field name="project_id"/>
+                <field name="date"/>
+                <field name="account_id"/>
+                <field name="partner_id"/>
+                <field name="journal_id"/>
+                <field name="move_name"/>
+                <filter string="Revenue" name="revenue" domain="[('section', 'in', ('revenue', 'other_income'))]"/>
+                <filter string="Costs" name="cost" domain="[('section', 'in', ('direct_cost', 'operating_expense'))]"/>
+                <separator/>
+                <filter string="Accounting Date" name="date_filter" date="date"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_by_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Section" name="group_by_section" context="{'group_by': 'section'}"/>
+                    <filter string="COA" name="group_by_account" context="{'group_by': 'account_id'}"/>
+                    <filter string="Month" name="group_by_month" context="{'group_by': 'date:month'}"/>
+                    <filter string="Journal" name="group_by_journal" context="{'group_by': 'journal_id'}"/>
+                    <filter string="Company" name="group_by_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_project_profit_loss_pivot" model="ir.ui.view">
+        <field name="name">mmp.project.profit.loss.line.pivot</field>
+        <field name="model">mmp.project.profit.loss.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Project Profit &amp; Loss" disable_linking="1">
+                <field name="project_id" type="row"/>
+                <field name="section" type="row"/>
+                <field name="account_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="revenue" type="measure"/>
+                <field name="cost" type="measure"/>
+                <field name="net_financial_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_project_profit_loss_graph" model="ir.ui.view">
+        <field name="name">mmp.project.profit.loss.line.graph</field>
+        <field name="model">mmp.project.profit.loss.line</field>
+        <field name="arch" type="xml">
+            <graph string="Monthly Project Profitability" type="bar" stacked="0">
+                <field name="date" interval="month"/>
+                <field name="revenue" type="measure"/>
+                <field name="cost" type="measure"/>
+                <field name="net_financial_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_project_profit_loss_detail" model="ir.actions.act_window">
+        <field name="name">Project P&amp;L by COA</field>
+        <field name="res_model">mmp.project.profit.loss.line</field>
+        <field name="view_mode">pivot,tree,graph</field>
+        <field name="search_view_id" ref="view_project_profit_loss_line_search"/>
+        <field name="groups_id" eval="[(4, ref('group_project_financial_viewer'))]"/>
+        <field name="context">{'search_default_group_by_section': 1, 'search_default_group_by_account': 1}</field>
+        <field name="help" type="html"><p>No posted project financial entries were found for this period.</p></field>
+    </record>
+
+    <record id="action_project_journal_history" model="ir.actions.act_window">
+        <field name="name">Project Journal History</field>
+        <field name="res_model">mmp.project.profit.loss.line</field>
+        <field name="view_mode">tree,pivot,graph</field>
+        <field name="view_id" ref="view_project_journal_history_tree"/>
+        <field name="search_view_id" ref="view_project_profit_loss_line_search"/>
+        <field name="groups_id" eval="[(4, ref('group_project_financial_viewer'))]"/>
+        <field name="help" type="html"><p>No allocated posted journal items were found.</p></field>
+    </record>
+</odoo>

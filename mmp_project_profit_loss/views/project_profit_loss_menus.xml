@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_project_profit_loss"
+              name="Project Profit &amp; Loss"
+              parent="project.menu_project_report"
+              action="action_project_profit_loss_wizard"
+              groups="mmp_project_profit_loss.group_project_financial_viewer"
+              sequence="30"/>
+    <menuitem id="menu_project_journal_history"
+              name="Project Journal History"
+              parent="project.menu_project_report"
+              action="action_project_journal_history"
+              groups="mmp_project_profit_loss.group_project_financial_viewer"
+              sequence="31"/>
+</odoo>

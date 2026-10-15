@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_profit_loss_line_viewer,project.profit.loss.line.viewer,model_mmp_project_profit_loss_line,group_project_financial_viewer,1,0,0,0
+access_project_profit_loss_wizard_viewer,project.profit.loss.wizard.viewer,model_mmp_project_profit_loss_wizard,group_project_financial_viewer,1,1,1,1

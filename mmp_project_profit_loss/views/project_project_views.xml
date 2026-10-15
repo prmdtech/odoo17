@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_project_form_profit_loss" model="ir.ui.view">
+        <field name="name">project.project.form.profit.loss</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="action_open_profit_loss" icon="fa-line-chart"
+                        groups="mmp_project_profit_loss.group_project_financial_viewer">
+                    <field name="pnl_profit" widget="statinfo" string="Profit / Loss"/>
+                </button>
+                <button class="oe_stat_button" type="object" name="action_open_journal_history" icon="fa-list-alt"
+                        groups="mmp_project_profit_loss.group_project_financial_viewer">
+                    <field name="pnl_journal_item_count" widget="statinfo" string="Journal Items"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='description']" position="after">
+                <page name="financial_profitability" string="Financial Profitability"
+                      groups="mmp_project_profit_loss.group_project_financial_viewer">
+                    <field name="pnl_configuration_state" invisible="1"/>
+                    <div class="alert alert-warning" role="alert" invisible="pnl_configuration_state == 'ok'">
+                        <field name="pnl_configuration_message" nolabel="1"/>
+                    </div>
+                    <group invisible="pnl_configuration_state != 'ok'">
+                        <group>
+                            <field name="pnl_revenue"/>
+                            <field name="pnl_cost"/>
+                        </group>
+                        <group>
+                            <field name="pnl_profit"/>
+                            <field name="pnl_margin_available" invisible="1"/>
+                            <field name="pnl_margin" invisible="not pnl_margin_available"/>
+                            <label string="Profit Margin: N/A" for="pnl_margin" invisible="pnl_margin_available"/>
+                        </group>
+                    </group>
+                    <separator string="Details by Account" invisible="pnl_configuration_state != 'ok'"/>
+                    <field name="pnl_account_detail_html"
+                           widget="html"
+                           nolabel="1"
+                           readonly="1"
+                           invisible="pnl_configuration_state != 'ok'"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_project_kanban_profit_loss" model="ir.ui.view">
+        <field name="name">project.project.kanban.profit.loss</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_kanban"/>
+        <field name="priority">210</field>
+        <field name="arch" type="xml">
+            <xpath expr="/kanban" position="inside">
+                <field name="currency_id" groups="mmp_project_profit_loss.group_project_financial_viewer"/>
+                <field name="pnl_revenue" groups="mmp_project_profit_loss.group_project_financial_viewer"/>
+                <field name="pnl_cost" groups="mmp_project_profit_loss.group_project_financial_viewer"/>
+                <field name="pnl_profit" groups="mmp_project_profit_loss.group_project_financial_viewer"/>
+                <field name="pnl_margin" groups="mmp_project_profit_loss.group_project_financial_viewer"/>
+                <field name="pnl_margin_available" groups="mmp_project_profit_loss.group_project_financial_viewer"/>
+                <field name="pnl_configuration_state" groups="mmp_project_profit_loss.group_project_financial_viewer"/>
+                <field name="pnl_configuration_message" groups="mmp_project_profit_loss.group_project_financial_viewer"/>
+            </xpath>
+            <xpath expr="//div[hasclass('o_kanban_record_bottom')]" position="before">
+                <div class="mt-2 border-top pt-2" groups="mmp_project_profit_loss.group_project_financial_viewer">
+                    <t t-if="record.pnl_configuration_state.raw_value == 'ok'">
+                        <div class="d-flex justify-content-between"><span>Revenue</span><field name="pnl_revenue" widget="monetary"/></div>
+                        <div class="d-flex justify-content-between"><span>Cost</span><field name="pnl_cost" widget="monetary"/></div>
+                        <div t-att-class="'d-flex justify-content-between fw-bold ' + (record.pnl_profit.raw_value &gt; 0 ? 'text-success' : (record.pnl_profit.raw_value &lt; 0 ? 'text-danger' : 'text-muted'))">
+                            <span>Net Profit / Loss</span><field name="pnl_profit" widget="monetary"/>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Profit Margin</span>
+                            <span t-if="record.pnl_margin_available.raw_value"><field name="pnl_margin" widget="float"/>%</span>
+                            <span t-else="" class="text-muted">N/A</span>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button name="action_open_profit_loss"
+                                    type="object"
+                                    class="btn btn-sm btn-outline-primary">
+                                <i class="fa fa-line-chart me-1"/>View Detail
+                            </button>
+                        </div>
+                    </t>
+                    <div t-else="" class="text-warning small"><i class="fa fa-warning me-1"/><t t-esc="record.pnl_configuration_message.value"/></div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

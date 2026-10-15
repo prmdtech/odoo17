@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_profit_loss_wizard_form" model="ir.ui.view">
+        <field name="name">mmp.project.profit.loss.wizard.form</field>
+        <field name="model">mmp.project.profit.loss.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Project Profit &amp; Loss">
+                <sheet>
+                    <field name="allowed_company_ids" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="period"/>
+                            <field name="date_from" invisible="period == 'all'" required="period == 'custom'"/>
+                            <field name="date_to" invisible="period == 'all'" required="period == 'custom'"/>
+                        </group>
+                    </group>
+                    <separator string="Financial Sections"/>
+                    <group class="o_group o_inner_group">
+                        <group>
+                            <field name="revenue"/>
+                            <field name="direct_cost"/>
+                            <field name="gross_profit" class="fw-bold"/>
+                        </group>
+                        <group>
+                            <field name="operating_expense"/>
+                            <field name="other_income"/>
+                            <field name="net_profit" class="fw-bold"/>
+                            <field name="margin_available" invisible="1"/>
+                            <field name="margin" invisible="not margin_available"/>
+                            <label string="N/A" for="margin" invisible="margin_available"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        Operating expenses include Expenses and Depreciation. Other Income uses the Other Income account type. The standard chart of accounts does not distinguish every operating/non-operating item beyond these account types.
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_open_details" type="object" string="P&amp;L by COA" class="btn-primary"/>
+                    <button name="action_open_history" type="object" string="Journal History"/>
+                    <button name="action_export_profit_loss" type="object" string="Export P&amp;L XLSX"/>
+                    <button name="action_export_history" type="object" string="Export History XLSX"/>
+                    <button string="Close" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_project_profit_loss_wizard" model="ir.actions.act_window">
+        <field name="name">Project Profit &amp; Loss</field>
+        <field name="res_model">mmp.project.profit.loss.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_project_profit_loss_wizard_form"/>
+        <field name="target">new</field>
+        <field name="groups_id" eval="[(4, ref('mmp_project_profit_loss.group_project_financial_viewer'))]"/>
+    </record>
+</odoo>

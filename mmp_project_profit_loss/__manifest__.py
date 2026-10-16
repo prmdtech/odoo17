@@ -4,7 +4,7 @@
     "version": "17.0.1.0.0",
     "category": "Services/Project",
     "summary": "Actual project profitability from posted analytic journal items",
-    "author": "MMP Consulting",
+    "author": "PRMD TECH",
     "license": "LGPL-3",
     "depends": [
         "project",

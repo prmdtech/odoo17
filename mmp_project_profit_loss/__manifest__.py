@@ -1,6 +1,6 @@
 
 {
-    "name": "MMP Project Profit & Loss",
+    "name": "Project Profit & Loss",
     "version": "17.0.1.0.0",
     "category": "Services/Project",
     "summary": "Actual project profitability from posted analytic journal items",
